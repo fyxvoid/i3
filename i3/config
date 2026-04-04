@@ -1,0 +1,315 @@
+# ╔══════════════════════════════════════════════════════════════╗
+# ║           i3 Config — Cyber / Pentester Edition              ║
+# ║                       Kali Linux                             ║
+# ╚══════════════════════════════════════════════════════════════╝
+#
+# Mod key: Super (Win)  ·  Navigation: hjkl  ·  i3 4.22+
+
+set $mod Mod4
+
+# ── Include modular configs (i3 4.20+) ────────────────────────
+# Drop extra *.conf files in ~/.config/i3/config.d/ to extend
+include ~/.config/i3/config.d/*.conf
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# AESTHETICS
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# ── Font ──────────────────────────────────────────────────────
+font pango:JetBrainsMono Nerd Font 10
+
+# ── Color Palette (Cyber Dark) ────────────────────────────────
+set $black    #08090e
+set $bg       #0d0f1a
+set $bg_alt   #141624
+set $bg_hi    #1c1f35
+set $fg       #cdd6f4
+set $dim      #45475a
+set $cyan     #00d4d4
+set $green    #a6e3a1
+set $red      #f38ba8
+set $yellow   #f9e2af
+set $magenta  #cba6f7
+set $blue     #89b4fa
+set $orange   #fab387
+
+# ── Window Colors ─────────────────────────────────────────────
+#                       border   bg        text    indicator  child_border
+client.focused          $cyan    $bg_hi    $fg     $cyan      $cyan
+client.focused_inactive $bg_alt  $bg_alt   $dim    $bg_alt    $bg_alt
+client.unfocused        $bg      $bg       $dim    $bg        $bg
+client.urgent           $red     $red      $fg     $red       $red
+client.placeholder      $bg      $black    $dim    $bg        $black
+client.background                $black
+
+# ── Gaps (i3 4.22+) ───────────────────────────────────────────
+gaps inner 6 
+gaps outer 4 
+
+# ── Borders ───────────────────────────────────────────────────
+default_border pixel 2
+default_floating_border pixel 2
+hide_edge_borders smart
+title_align center
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# STARTUP
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+exec --no-startup-id dex --autostart --environment i3
+exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork
+exec --no-startup-id nm-applet
+exec --no-startup-id feh --bg-fill ~/Pictures/1407227.png
+
+# Compositor — single instance only
+exec --no-startup-id picom --config ~/.config/picom/picom.conf -b
+
+# Notifications
+exec --no-startup-id dunst
+
+# Polybar — kill any stale instance then relaunch
+exec_always --no-startup-id $HOME/.config/polybar/launch.sh
+
+# Touchpad tap-to-click
+exec --no-startup-id bash -c 'ID=$(xinput list 2>/dev/null | grep -iE "touchpad|trackpad" | grep -oP "id=\K[0-9]+" | head -1); [ -n "$ID" ] && xinput set-prop "$ID" "libinput Tapping Enabled" 1'
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# INPUT
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+floating_modifier $mod
+tiling_drag modifier titlebar
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# MEDIA / HARDWARE KEYS
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+set $refresh_bar killall -SIGUSR1 i3status
+
+bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +5% && $refresh_bar
+bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -5% && $refresh_bar
+bindsym XF86AudioMute        exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle && $refresh_bar
+bindsym XF86AudioMicMute     exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle && $refresh_bar
+bindsym XF86MonBrightnessUp  exec --no-startup-id brightnessctl set +5%
+bindsym XF86MonBrightnessDown exec --no-startup-id brightnessctl set 5%-
+
+bindsym $mod+Shift+x exec i3lock -i ~/Pictures/1407227.png
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# CORE APPLICATIONS
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+bindsym $mod+Return       exec alacritty
+bindsym $mod+Shift+Return exec alacritty --class "floating-term,floating-term"
+bindsym $mod+d            exec --no-startup-id j4-dmenu-desktop --dmenu="dmenu -i -l 12 -fn 'JetBrainsMono Nerd Font-10' -nb '#1C2B35' -nf '#D8EEF8' -sb '#E87DA0' -sf '#1C2B35' -p '  run'"
+bindsym $mod+Shift+d      exec --no-startup-id dmenu_run -i -l 12 -fn 'JetBrainsMono Nerd Font-10' -nb '#1C2B35' -nf '#D8EEF8' -sb '#E87DA0' -sf '#1C2B35' -p '  cmd'
+bindsym $mod+b            exec --no-startup-id firefox
+bindsym $mod+Shift+f      exec --no-startup-id thunar
+bindsym Print             exec --no-startup-id flameshot gui
+bindsym $mod+Print        exec --no-startup-id flameshot full -p ~/Pictures/Screenshots/
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# PENTESTER QUICK-LAUNCH   ($mod+p → pentest mode)
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+mode " PENTEST  [b]urp [w]ireshark [m]etasploit [n]map [z]ap [g]host [v]pn [c]ode [q]uit" {
+    # Proxies / Interceptors
+    bindsym b exec --no-startup-id burpsuite, mode "default"
+    bindsym z exec --no-startup-id zaproxy, mode "default"
+
+    # Traffic Analysis
+    bindsym w exec --no-startup-id wireshark, mode "default"
+
+    # Exploitation
+    bindsym m exec --no-startup-id alacritty -e msfconsole, mode "default"
+
+    # Recon
+    bindsym n exec --no-startup-id alacritty -e bash -c "echo 'nmap -sV -sC -oA scan <TARGET>'; bash", mode "default"
+
+    # Code editor
+    bindsym c exec --no-startup-id code, mode "default"
+
+    # VPN — toggle based on whether tun0 exists
+    bindsym v exec --no-startup-id alacritty -e bash -c \
+        "if ip link show tun0 &>/dev/null; then sudo killall openvpn 2>/dev/null; echo '[+] VPN disconnected'; else CFG=\$(ls ~/vpn/*.ovpn 2>/dev/null | head -1); [ -n \"\$CFG\" ] && sudo openvpn --config \"\$CFG\" || echo '[-] No .ovpn file in ~/vpn/'; fi; sleep 2", \
+        mode "default"
+
+    # Ghost/anonymous browser
+    bindsym g exec --no-startup-id firefox --private-window, mode "default"
+
+    bindsym q        mode "default"
+    bindsym Escape   mode "default"
+    bindsym $mod+p   mode "default"
+}
+bindsym $mod+p mode " PENTEST  [b]urp [w]ireshark [m]etasploit [n]map [z]ap [g]host [v]pn [c]ode [q]uit"
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# WINDOW MANAGEMENT
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+bindsym $mod+q kill
+
+# Focus — vim + arrows
+bindsym $mod+h focus left
+bindsym $mod+j focus down
+bindsym $mod+k focus up
+bindsym $mod+l focus right
+bindsym $mod+Left  focus left
+bindsym $mod+Down  focus down
+bindsym $mod+Up    focus up
+bindsym $mod+Right focus right
+
+# Move — vim + arrows
+bindsym $mod+Shift+h move left
+bindsym $mod+Shift+j move down
+bindsym $mod+Shift+k move up
+bindsym $mod+Shift+l move right
+bindsym $mod+Shift+Left  move left
+bindsym $mod+Shift+Down  move down
+bindsym $mod+Shift+Up    move up
+bindsym $mod+Shift+Right move right
+
+# Split
+bindsym $mod+x split h
+bindsym $mod+v split v
+
+# Layout
+bindsym $mod+f        fullscreen toggle
+bindsym $mod+s        layout stacking
+bindsym $mod+w        layout tabbed
+bindsym $mod+e        layout toggle split
+
+# Floating
+bindsym $mod+Shift+space floating toggle
+bindsym $mod+space       focus mode_toggle
+bindsym $mod+a           focus parent
+
+# Sticky float (picture-in-picture style)
+bindsym $mod+Shift+s sticky toggle
+
+# ── Scratchpad ────────────────────────────────────────────────
+bindsym $mod+Shift+minus move scratchpad
+bindsym $mod+minus       scratchpad show
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# WORKSPACES  (pentester-oriented layout)
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+#  1 ›  Terminal     main shells / tmux
+#  2 ›  Browser      research / docs
+#  3 ›  Proxy        Burp Suite / ZAP
+#  4 ›  Exploit      Metasploit / code
+#  5 ›  Recon        nmap / amass / recon-ng
+#  6 ›  Listeners    nc / pwncat / shells
+#  7 ›  OSINT        maltego / OSINT tools
+#  8 ›  Files        file manager / notes
+#  9 ›  VM           virtualbox / virt-manager
+#  0 ›  Media        music / comms
+
+set $ws1  "1: "
+set $ws2  "2: "
+set $ws3  "3: "
+set $ws4  "4: "
+set $ws5  "5: "
+set $ws6  "6: "
+set $ws7  "7: "
+set $ws8  "8: "
+set $ws9  "9: "
+set $ws10 "10: "
+
+# Switch
+bindsym $mod+1 workspace number $ws1
+bindsym $mod+2 workspace number $ws2
+bindsym $mod+3 workspace number $ws3
+bindsym $mod+4 workspace number $ws4
+bindsym $mod+5 workspace number $ws5
+bindsym $mod+6 workspace number $ws6
+bindsym $mod+7 workspace number $ws7
+bindsym $mod+8 workspace number $ws8
+bindsym $mod+9 workspace number $ws9
+bindsym $mod+0 workspace number $ws10
+
+# Move container
+bindsym $mod+Shift+1 move container to workspace number $ws1
+bindsym $mod+Shift+2 move container to workspace number $ws2
+bindsym $mod+Shift+3 move container to workspace number $ws3
+bindsym $mod+Shift+4 move container to workspace number $ws4
+bindsym $mod+Shift+5 move container to workspace number $ws5
+bindsym $mod+Shift+6 move container to workspace number $ws6
+bindsym $mod+Shift+7 move container to workspace number $ws7
+bindsym $mod+Shift+8 move container to workspace number $ws8
+bindsym $mod+Shift+9 move container to workspace number $ws9
+bindsym $mod+Shift+0 move container to workspace number $ws10
+
+# Cycle workspaces
+bindsym $mod+bracketleft  workspace prev
+bindsym $mod+bracketright workspace next
+
+# ── Auto-assign apps to workspaces ────────────────────────────
+assign [class="firefox"]                  $ws2
+assign [class="Chromium"]                 $ws2
+assign [class="burpsuite"]                $ws3
+assign [class="ZAP"]                      $ws3
+assign [class="Code"]                     $ws4
+assign [class="Vmware"]                   $ws9
+assign [class="VirtualBox Manager"]       $ws9
+assign [class="virt-manager"]             $ws9
+assign [class="Maltego"]                  $ws7
+assign [class="Thunar"]                   $ws8
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# SESSION
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+bindsym $mod+Shift+c reload
+bindsym $mod+Shift+r restart
+bindsym $mod+Shift+e exec "i3-nagbar -t warning -m '  Exit i3?' \
+    -B 'Exit' 'i3-msg exit' \
+    -B 'Reboot' 'systemctl reboot' \
+    -B 'Shutdown' 'systemctl poweroff'"
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# RESIZE MODE
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+mode "  RESIZE" {
+    bindsym h resize shrink width  10 px or 10 ppt
+    bindsym j resize grow   height 10 px or 10 ppt
+    bindsym k resize shrink height 10 px or 10 ppt
+    bindsym l resize grow   width  10 px or 10 ppt
+    bindsym Left  resize shrink width  10 px or 10 ppt
+    bindsym Down  resize grow   height 10 px or 10 ppt
+    bindsym Up    resize shrink height 10 px or 10 ppt
+    bindsym Right resize grow   width  10 px or 10 ppt
+
+    # Fine-grained (Shift + direction = 2px)
+    bindsym Shift+h resize shrink width  2 px or 2 ppt
+    bindsym Shift+j resize grow   height 2 px or 2 ppt
+    bindsym Shift+k resize shrink height 2 px or 2 ppt
+    bindsym Shift+l resize grow   width  2 px or 2 ppt
+
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+    bindsym $mod+r mode "default"
+}
+bindsym $mod+r mode "  RESIZE"
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# FLOATING RULES
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+for_window [window_role="pop-up"]               floating enable
+for_window [window_role="task_dialog"]          floating enable
+for_window [window_role="bubble"]               floating enable
+for_window [class="Nm-connection-editor"]       floating enable
+for_window [class="Pavucontrol"]               floating enable
+for_window [class="flameshot"]                  floating enable
+for_window [class="floating-term"]              floating enable, resize set 900 550, move position center
+for_window [title="Picture-in-Picture"]         floating enable, sticky enable
+for_window [title="^Android Emulator"]          floating enable
+for_window [class="Arandr"]                     floating enable
+for_window [class="feh"]                        floating enable
+for_window [class="Xmessage"]                   floating enable
+for_window [title="i3_help"]                    floating enable, sticky enable, resize set 1100 600
+
+# ── Focus behavior ────────────────────────────────────────────
+focus_follows_mouse no
+mouse_warping none
+popup_during_fullscreen smart

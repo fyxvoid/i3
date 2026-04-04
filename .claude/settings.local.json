@@ -1,0 +1,36 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//sys/class/power_supply/**)",
+      "Read(//sys/class/thermal/**)",
+      "Read(//sys/class/net/**)",
+      "Bash(ip -o link show)",
+      "Bash(apt-cache show:*)",
+      "Bash(find /home/fyxvoid/Void/dotfiles/polybar/scripts -type f -exec head -50 {} +)",
+      "Bash(find /home/fyxvoid/.config/polybar/scripts -type f -exec head -50 {} +)",
+      "Bash(ip link:*)",
+      "Bash(cat /sys/class/thermal/thermal_zone*/type)",
+      "Bash(cp --remove-destination /home/fyxvoid/.config/i3/config /home/fyxvoid/Void/dotfiles/i3/config)",
+      "Bash(cp --remove-destination /home/fyxvoid/.config/polybar/config.ini /home/fyxvoid/Void/dotfiles/polybar/config.ini)",
+      "Bash(\\\\cp /home/fyxvoid/.config/polybar/config.ini /home/fyxvoid/Void/dotfiles/polybar/config.ini)",
+      "Bash(DISPLAY=:0 feh --bg-fill ~/Pictures/1407227.png)",
+      "Bash(DISPLAY=:0 bash:*)",
+      "Bash(\\\\cp /home/fyxvoid/.config/polybar/scripts/vpn-status.sh /home/fyxvoid/Void/dotfiles/polybar/scripts/vpn-status.sh)",
+      "Bash(DISPLAY=:0 polybar main)",
+      "Bash(kill %1)",
+      "Bash(fc-list)",
+      "Bash(python3:*)",
+      "Bash(grep 'set $ws' /home/fyxvoid/.config/i3/config)",
+      "Bash(DISPLAY=:0 i3-msg workspace \\\\\"1: \\\\\"; workspace \\\\\"2: \\\\\"; workspace \\\\\"3: \\\\\"; workspace \\\\\"4: \\\\\"; workspace \\\\\"5: \\\\\"; workspace \\\\\"1: \\\\\":*)",
+      "Bash(\\\\cp /home/fyxvoid/.config/i3/config /home/fyxvoid/Void/dotfiles/i3/config)",
+      "Bash(grep 'set $ws[1-5]' /home/fyxvoid/.config/i3/config)",
+      "Bash(chmod +x /home/fyxvoid/.config/polybar/scripts/workspaces.sh)",
+      "Bash(\\\\cp /home/fyxvoid/.config/polybar/scripts/workspaces.sh /home/fyxvoid/Void/dotfiles/polybar/scripts/workspaces.sh)",
+      "Bash(ls /home/fyxvoid/.fonts/JetBrainsMonoNerdFont-*.ttf)",
+      "Bash(du -sh /home/fyxvoid/.fonts/JetBrainsMonoNerdFont-*.ttf)",
+      "Bash(cp /home/fyxvoid/.fonts/JetBrainsMonoNerdFont-*.ttf /home/fyxvoid/Void/dotfiles/fonts/)",
+      "Bash(cp /usr/share/fonts/truetype/noto/NotoColorEmoji.ttf /home/fyxvoid/Void/dotfiles/fonts/)",
+      "Bash(cp /home/fyxvoid/Pictures/1407227.png /home/fyxvoid/Void/dotfiles/wallpapers/)"
+    ]
+  }
+}

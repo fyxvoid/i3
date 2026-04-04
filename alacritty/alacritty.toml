@@ -1,0 +1,221 @@
+# =============================================================
+#  Alacritty — Pentester Edition
+#  Theme: Cyber Dark (Dracula-inspired with hacker accents)
+# =============================================================
+
+# -----------------------------
+# General
+# -----------------------------
+[general]
+import = []
+live_config_reload = true
+
+# -----------------------------
+# Window
+# -----------------------------
+[window]
+padding            = { x = 14, y = 12 }
+decorations        = "full"
+opacity            = 0.92
+blur               = true
+startup_mode       = "Windowed"
+dynamic_title      = true
+title              = "alacritty"
+decorations_theme_variant = "Dark"
+
+[window.dimensions]
+columns = 0
+lines   = 0
+
+# -----------------------------
+# Font
+# -----------------------------
+[font]
+size = 8 
+
+[font.normal]
+family = "JetBrainsMono Nerd Font"
+style  = "Regular"
+
+[font.bold]
+family = "JetBrainsMono Nerd Font"
+style  = "Bold"
+
+[font.italic]
+family = "JetBrainsMono Nerd Font"
+style  = "Italic"
+
+[font.bold_italic]
+family = "JetBrainsMono Nerd Font"
+style  = "Bold Italic"
+
+[font.offset]
+x = 0
+y = 2
+
+[font.glyph_offset]
+x = 0
+y = 0
+
+# -----------------------------
+# Colors — Cyber Dark
+# -----------------------------
+[colors]
+draw_bold_text_with_bright_colors = true
+
+[colors.primary]
+background = "#0a0e17"   # deep navy-black
+foreground = "#cdd6f4"   # soft white (Catppuccin Mocha text)
+
+[colors.cursor]
+text   = "#0a0e17"
+cursor = "#00ff9f"       # neon mint — snappy cursor
+
+[colors.vi_mode_cursor]
+text   = "#0a0e17"
+cursor = "#f5c2e7"       # pink for vi mode
+
+[colors.search.matches]
+foreground = "#0a0e17"
+background = "#f9e2af"
+
+[colors.search.focused_match]
+foreground = "#0a0e17"
+background = "#00ff9f"
+
+[colors.hints.start]
+foreground = "#0a0e17"
+background = "#f9e2af"
+
+[colors.hints.end]
+foreground = "#0a0e17"
+background = "#a6e3a1"
+
+[colors.selection]
+text       = "#0a0e17"
+background = "#585b70"
+
+[colors.normal]
+black   = "#181825"
+red     = "#f38ba8"   # soft red   — errors
+green   = "#a6e3a1"   # sage green — success
+yellow  = "#f9e2af"   # warm amber — warnings
+blue    = "#89b4fa"   # sky blue   — info
+magenta = "#cba6f7"   # lavender   — highlights
+cyan    = "#89dceb"   # ice cyan   — data streams
+white   = "#cdd6f4"   # off-white
+
+[colors.bright]
+black   = "#313244"
+red     = "#ff6e6e"
+green   = "#00ff9f"   # neon mint  — hacker green
+yellow  = "#fff59d"
+blue    = "#a8d8ff"
+magenta = "#f5c2e7"
+cyan    = "#a4ffff"
+white   = "#ffffff"
+
+[colors.footer_bar]
+foreground = "#0a0e17"
+background = "#00ff9f"
+
+# -----------------------------
+# Cursor
+# -----------------------------
+[cursor]
+style          = { shape = "Block", blinking = "On" }
+blink_interval = 550
+blink_timeout  = 0          # blink forever
+unfocused_hollow = true
+
+# -----------------------------
+# Scrolling
+# -----------------------------
+[scrolling]
+history    = 50000          # large buffer — long nmap/ffuf/hydra output
+multiplier = 5
+
+# -----------------------------
+# Selection
+# -----------------------------
+[selection]
+save_to_clipboard    = true
+semantic_escape_chars = ",│`|:\"' ()[]{}<>\t"
+
+# -----------------------------
+# Mouse
+# -----------------------------
+[mouse]
+hide_when_typing = true
+
+[[mouse.bindings]]
+mouse  = "Right"
+action = "Paste"
+
+[[mouse.bindings]]
+mouse  = "Middle"
+action = "PasteSelection"
+
+# -----------------------------
+# Hints  (Ctrl+click URLs, IPs, hashes)
+# -----------------------------
+[hints]
+alphabet = "jfkdlsahgurieowpq"
+
+[[hints.enabled]]
+regex           = "(ipfs:|ipns:|magnet:|mailto:|gemini:|gopher:|https:|http:|news:|file:|git:|ssh:|ftp:)[^\u0000-\u001F\u007F-\u009F<>\"\\s{-}\\^⟨⟩`]+"
+command         = "xdg-open"
+hyperlinks      = true
+post_processing = true
+persist         = false
+mouse           = { enabled = true, mods = "Control" }
+binding         = { key = "U", mods = "Control|Shift" }
+
+# -----------------------------
+# Keyboard Bindings
+# -----------------------------
+[keyboard]
+bindings = [
+  # Clipboard
+  { key = "C",          mods = "Control|Shift", action = "Copy"            },
+  { key = "V",          mods = "Control|Shift", action = "Paste"           },
+
+  # New instance / window
+  { key = "N",          mods = "Control|Shift", action = "SpawnNewInstance" },
+
+  # Font size
+  { key = "Plus",       mods = "Control",       action = "IncreaseFontSize" },
+  { key = "Minus",      mods = "Control",       action = "DecreaseFontSize" },
+  { key = "Key0",       mods = "Control",       action = "ResetFontSize"    },
+
+  # Scroll
+  { key = "PageUp",     mods = "Shift",         action = "ScrollPageUp"     },
+  { key = "PageDown",   mods = "Shift",         action = "ScrollPageDown"   },
+  { key = "Home",       mods = "Shift",         action = "ScrollToTop"      },
+  { key = "End",        mods = "Shift",         action = "ScrollToBottom"   },
+
+  # Search
+  { key = "F",          mods = "Control|Shift", action = "SearchForward"    },
+  { key = "B",          mods = "Control|Shift", action = "SearchBackward"   },
+
+  # Vi mode
+  { key = "Space",      mods = "Control|Shift", action = "ToggleViMode"     },
+]
+
+# -----------------------------
+# Bell
+# -----------------------------
+[bell]
+animation = "EaseOutExpo"
+duration  = 0               # silent — no bell during enumeration noise
+color     = "#00ff9f"
+
+# -----------------------------
+# Shell
+# -----------------------------
+[terminal]
+osc52 = "CopyPaste"         # allows remote copy (useful over SSH)
+
+[terminal.shell]
+program = "/bin/zsh"
+args    = ["-l"]
