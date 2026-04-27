@@ -8,9 +8,9 @@ TARGET_FILE="$HOME/.config/pentest/target"
 if [[ -f "$TARGET_FILE" ]]; then
     read -r name ip < "$TARGET_FILE"
     if [[ -n "$name" && -n "$ip" ]]; then
-        echo "%{F#E87DA0}%{F-}  %{F#D8EEF8}${name}%{F-}  %{F#5BBAD6}${ip}%{F-}"
+        echo "%{T3}%{F#FFFFFF}󰓾%{F-}%{T-}  %{F#F0CCCC}${name}%{F-}  %{F#FF2244}${ip}%{F-}"
         exit 0
     fi
 fi
 
-echo "%{F#4A7080}%{F-}  no target%{F-}"
+echo "%{T3}%{F#662222}󰓾%{F-}%{T-}  no target"

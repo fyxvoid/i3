@@ -11,7 +11,7 @@ if [[ -n "$VPN_IF" ]]; then
          | awk '/inet / {print $2}' \
          | cut -d/ -f1 \
          | head -1)
-    echo "%{F#6ED9A0}󰝉%{F-}  ${VPN_IF}  ${IP}"
+    echo "%{T3}%{F#FFFFFF}󰒄%{F-}%{T-}  ${VPN_IF}  ${IP}"
 else
-    echo "%{F#4A7080}󰦞%{F-}  no vpn"
+    echo "%{T3}%{F#662222}󰦞%{F-}%{T-}  no vpn"
 fi

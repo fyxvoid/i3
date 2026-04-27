@@ -30,7 +30,16 @@
       "Bash(du -sh /home/fyxvoid/.fonts/JetBrainsMonoNerdFont-*.ttf)",
       "Bash(cp /home/fyxvoid/.fonts/JetBrainsMonoNerdFont-*.ttf /home/fyxvoid/Void/dotfiles/fonts/)",
       "Bash(cp /usr/share/fonts/truetype/noto/NotoColorEmoji.ttf /home/fyxvoid/Void/dotfiles/fonts/)",
-      "Bash(cp /home/fyxvoid/Pictures/1407227.png /home/fyxvoid/Void/dotfiles/wallpapers/)"
+      "Bash(cp /home/fyxvoid/Pictures/1407227.png /home/fyxvoid/Void/dotfiles/wallpapers/)",
+      "Bash(cp /home/fyxvoid/.config/polybar/config.ini /home/fyxvoid/void/dotfiles/polybar/config.ini)",
+      "Bash(cp /home/fyxvoid/.config/polybar/scripts/htb-status.sh /home/fyxvoid/void/dotfiles/polybar/scripts/htb-status.sh)",
+      "Bash(cp /home/fyxvoid/.config/polybar/scripts/vpn-status.sh /home/fyxvoid/void/dotfiles/polybar/scripts/vpn-status.sh)",
+      "Bash(cp -f /home/fyxvoid/.config/polybar/config.ini /home/fyxvoid/void/dotfiles/polybar/config.ini)",
+      "Bash(cp -f /home/fyxvoid/.config/polybar/scripts/htb-status.sh /home/fyxvoid/void/dotfiles/polybar/scripts/htb-status.sh)",
+      "Bash(cp -f /home/fyxvoid/.config/polybar/scripts/vpn-status.sh /home/fyxvoid/void/dotfiles/polybar/scripts/vpn-status.sh)",
+      "Bash(\\\\cp /home/fyxvoid/.config/polybar/config.ini /home/fyxvoid/void/dotfiles/polybar/config.ini)",
+      "Bash(\\\\cp /home/fyxvoid/.config/polybar/scripts/htb-status.sh /home/fyxvoid/void/dotfiles/polybar/scripts/htb-status.sh)",
+      "Bash(\\\\cp /home/fyxvoid/.config/polybar/scripts/vpn-status.sh /home/fyxvoid/void/dotfiles/polybar/scripts/vpn-status.sh)"
     ]
   }
 }
