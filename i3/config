@@ -1,11 +1,15 @@
 # ╔══════════════════════════════════════════════════════════════╗
-# ║           i3 Config — Cyber / Pentester Edition              ║
-# ║                       Kali Linux                             ║
+# ║                        i3 Config                              ║
+# ║                   Dark / Minimal Edition                      ║
 # ╚══════════════════════════════════════════════════════════════╝
 #
 # Mod key: Super (Win)  ·  Navigation: hjkl  ·  i3 4.22+
 
 set $mod Mod4
+
+# Wallpaper — feh needs the jpg, i3lock (cairo/PNG only) needs the png copy
+set $wallpaper ~/Pictures/anime.jpg
+set $lockimg   ~/Pictures/anime.png
 
 # ── Include modular configs (i3 4.20+) ────────────────────────
 # Drop extra *.conf files in ~/.config/i3/config.d/ to extend
@@ -18,7 +22,7 @@ include ~/.config/i3/config.d/*.conf
 # ── Font ──────────────────────────────────────────────────────
 font pango:JetBrainsMono Nerd Font 10
 
-# ── Color Palette (Cyber Dark) ────────────────────────────────
+# ── Color Palette (Dark) ───────────────────────────────────────
 set $black    #08090e
 set $bg       #0d0f1a
 set $bg_alt   #141624
@@ -26,7 +30,7 @@ set $bg_hi    #1c1f35
 set $fg       #cdd6f4
 set $dim      #45475a
 set $cyan     #00d4d4
-set $green    #a6e3a1
+set $green    #7ed321
 set $red      #f38ba8
 set $yellow   #f9e2af
 set $magenta  #cba6f7
@@ -57,9 +61,9 @@ title_align center
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 exec --no-startup-id dex --autostart --environment i3
-exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork
+exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork -i $lockimg -c 0d0f1a
 exec --no-startup-id nm-applet
-exec --no-startup-id feh --bg-fill ~/Pictures/1407227.png
+exec --no-startup-id feh --bg-fill $wallpaper
 
 # Compositor — single instance only
 exec --no-startup-id picom --config ~/.config/picom/picom.conf -b
@@ -67,8 +71,26 @@ exec --no-startup-id picom --config ~/.config/picom/picom.conf -b
 # Notifications
 exec --no-startup-id dunst
 
-# Polybar — kill any stale instance then relaunch
-exec_always --no-startup-id $HOME/.config/polybar/launch.sh
+# Status bar
+bar {
+    status_command i3status -c ~/.config/i3/i3status.conf
+    position       top
+    font           pango:JetBrainsMono Nerd Font 10
+    padding        2
+    separator_symbol "  │  "
+    tray_output    none
+
+    colors {
+        background         $bg
+        statusline         $fg
+        separator          $dim
+
+        focused_workspace  $green  $green  $bg
+        active_workspace   $bg_hi  $bg_hi  $fg
+        inactive_workspace $bg_alt $bg_alt $fg
+        urgent_workspace   $red    $red    $fg
+    }
+}
 
 # Touchpad tap-to-click
 exec --no-startup-id bash -c 'ID=$(xinput list 2>/dev/null | grep -iE "touchpad|trackpad" | grep -oP "id=\K[0-9]+" | head -1); [ -n "$ID" ] && xinput set-prop "$ID" "libinput Tapping Enabled" 1'
@@ -85,14 +107,20 @@ tiling_drag modifier titlebar
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 set $refresh_bar killall -SIGUSR1 i3status
 
-bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +5% && $refresh_bar
-bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -5% && $refresh_bar
-bindsym XF86AudioMute        exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle && $refresh_bar
-bindsym XF86AudioMicMute     exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle && $refresh_bar
-bindsym XF86MonBrightnessUp  exec --no-startup-id brightnessctl set +5%
-bindsym XF86MonBrightnessDown exec --no-startup-id brightnessctl set 5%-
+bindsym XF86AudioRaiseVolume exec --no-startup-id ~/.config/dunst/scripts/osd-volume.sh up && $refresh_bar
+bindsym XF86AudioLowerVolume exec --no-startup-id ~/.config/dunst/scripts/osd-volume.sh down && $refresh_bar
+bindsym XF86AudioMute        exec --no-startup-id ~/.config/dunst/scripts/osd-volume.sh mute && $refresh_bar
+bindsym XF86AudioMicMute     exec --no-startup-id ~/.config/dunst/scripts/osd-volume.sh mic-mute
+bindsym XF86MonBrightnessUp  exec --no-startup-id ~/.config/dunst/scripts/osd-brightness.sh up
+bindsym XF86MonBrightnessDown exec --no-startup-id ~/.config/dunst/scripts/osd-brightness.sh down
 
-bindsym $mod+Shift+x exec i3lock -i ~/Pictures/1407227.png
+# Notifications (dunst)
+bindsym $mod+grave       exec --no-startup-id dunstctl close
+bindsym $mod+Shift+grave exec --no-startup-id dunstctl close-all
+bindsym $mod+period      exec --no-startup-id dunstctl history-pop
+bindsym $mod+comma       exec --no-startup-id dunstctl context
+
+bindsym $mod+Shift+x exec i3lock -i $lockimg -c 0d0f1a
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # CORE APPLICATIONS
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -105,41 +133,6 @@ bindsym $mod+b            exec --no-startup-id firefox
 bindsym $mod+Shift+f      exec --no-startup-id thunar
 bindsym Print             exec --no-startup-id flameshot gui
 bindsym $mod+Print        exec --no-startup-id flameshot full -p ~/Pictures/Screenshots/
-
-# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# PENTESTER QUICK-LAUNCH   ($mod+p → pentest mode)
-# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-mode " PENTEST  [b]urp [w]ireshark [m]etasploit [n]map [z]ap [g]host [v]pn [c]ode [q]uit" {
-    # Proxies / Interceptors
-    bindsym b exec --no-startup-id burpsuite, mode "default"
-    bindsym z exec --no-startup-id zaproxy, mode "default"
-
-    # Traffic Analysis
-    bindsym w exec --no-startup-id wireshark, mode "default"
-
-    # Exploitation
-    bindsym m exec --no-startup-id alacritty -e msfconsole, mode "default"
-
-    # Recon
-    bindsym n exec --no-startup-id alacritty -e bash -c "echo 'nmap -sV -sC -oA scan <TARGET>'; bash", mode "default"
-
-    # Code editor
-    bindsym c exec --no-startup-id code, mode "default"
-
-    # VPN — toggle based on whether tun0 exists
-    bindsym v exec --no-startup-id alacritty -e bash -c \
-        "if ip link show tun0 &>/dev/null; then sudo killall openvpn 2>/dev/null; echo '[+] VPN disconnected'; else CFG=\$(ls ~/vpn/*.ovpn 2>/dev/null | head -1); [ -n \"\$CFG\" ] && sudo openvpn --config \"\$CFG\" || echo '[-] No .ovpn file in ~/vpn/'; fi; sleep 2", \
-        mode "default"
-
-    # Ghost/anonymous browser
-    bindsym g exec --no-startup-id firefox --private-window, mode "default"
-
-    bindsym q        mode "default"
-    bindsym Escape   mode "default"
-    bindsym $mod+p   mode "default"
-}
-bindsym $mod+p mode " PENTEST  [b]urp [w]ireshark [m]etasploit [n]map [z]ap [g]host [v]pn [c]ode [q]uit"
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # WINDOW MANAGEMENT
@@ -190,18 +183,10 @@ bindsym $mod+Shift+minus move scratchpad
 bindsym $mod+minus       scratchpad show
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# WORKSPACES  (pentester-oriented layout)
+# WORKSPACES
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-#  1 ›  Terminal     main shells / tmux
-#  2 ›  Browser      research / docs
-#  3 ›  Proxy        Burp Suite / ZAP
-#  4 ›  Exploit      Metasploit / code
-#  5 ›  Recon        nmap / amass / recon-ng
-#  6 ›  Listeners    nc / pwncat / shells
-#  7 ›  OSINT        maltego / OSINT tools
-#  8 ›  Files        file manager / notes
-#  9 ›  VM           virtualbox / virt-manager
-#  0 ›  Media        music / comms
+#  10 numbered workspaces, switch with Mod+<number>.
+#  Browsers, code editor, file manager, and VM apps auto-assign below.
 
 set $ws1  "1: "
 set $ws2  "2: "
@@ -245,13 +230,10 @@ bindsym $mod+bracketright workspace next
 # ── Auto-assign apps to workspaces ────────────────────────────
 assign [class="firefox"]                  $ws2
 assign [class="Chromium"]                 $ws2
-assign [class="burpsuite"]                $ws3
-assign [class="ZAP"]                      $ws3
-assign [class="Code"]                     $ws4
+assign [class="Code"]                     $ws3
 assign [class="Vmware"]                   $ws9
 assign [class="VirtualBox Manager"]       $ws9
 assign [class="virt-manager"]             $ws9
-assign [class="Maltego"]                  $ws7
 assign [class="Thunar"]                   $ws8
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

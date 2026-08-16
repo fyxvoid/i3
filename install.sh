@@ -52,7 +52,7 @@ PKGS=(
     arandr
 
     # Bar
-    polybar
+    i3status
 
     # Terminal
     alacritty
@@ -69,14 +69,13 @@ PKGS=(
     zsh-autosuggestions
     zsh-syntax-highlighting
 
-    # Fonts
-    fonts-jetbrains-mono
-
     # Modern CLI
     eza
     bat
     zoxide
     fzf
+    ripgrep
+    fd-find
 
     # File manager + apps
     thunar
@@ -96,24 +95,10 @@ PKGS=(
     git
     openvpn
     wireguard
-
-    # Pentest — recon
-    nmap
-    gobuster
-    nikto
-    whatweb
-    ffuf
     dnsutils
+    netcat-openbsd
 
-    # Pentest — web
-    feroxbuster
-
-    # Pentest — password
-    hydra
-    john
-    hashcat
-
-    # Pentest — misc
+    # Utilities
     socat
     tmux
     neovim
@@ -124,22 +109,6 @@ PKGS=(
     p7zip-full
     unrar
 )
-
-# netcat: prefer traditional (supports -e flag for shells)
-if apt-cache show netcat-traditional &>/dev/null 2>&1; then
-    PKGS+=(netcat-traditional)
-else
-    PKGS+=(netcat-openbsd)
-fi
-
-# wordlists (available on Kali/Parrot, may not exist on vanilla Debian/Ubuntu)
-if apt-cache show wordlists &>/dev/null 2>&1; then
-    PKGS+=(wordlists)
-fi
-
-# seclists (Kali only, large package ~900MB — optional)
-# Uncomment to include:
-# if apt-cache show seclists &>/dev/null 2>&1; then PKGS+=(seclists); fi
 
 info "Installing ${#PKGS[@]} packages..."
 sudo apt install -y "${PKGS[@]}" || die "Package installation failed."
@@ -162,6 +131,37 @@ else
 fi
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+section "Starship prompt"
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+if ! command -v starship &>/dev/null; then
+    info "Installing starship..."
+    mkdir -p "$USER_HOME/.local/bin"
+    if curl -fsSL https://starship.rs/install.sh | sh -s -- -y --bin-dir "$USER_HOME/.local/bin"; then
+        ok "starship installed to ~/.local/bin"
+    else
+        warn "starship install failed — continuing. Install manually later."
+    fi
+else
+    ok "starship already present — skipping"
+fi
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+section "Atuin (shell history)"
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+if [[ ! -x "$USER_HOME/.atuin/bin/atuin" ]]; then
+    info "Installing atuin..."
+    if curl --proto '=https' --tlsv1.2 -sSf https://setup.atuin.sh | sh; then
+        ok "atuin installed to ~/.atuin/bin"
+    else
+        warn "atuin install failed — continuing. Install manually later."
+    fi
+else
+    ok "atuin already present — skipping"
+fi
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 section "Default shell → zsh"
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -180,15 +180,10 @@ section "Directories"
 
 mkdir -p \
     "$USER_HOME/.config/i3/config.d" \
-    "$USER_HOME/.config/polybar/scripts" \
     "$USER_HOME/.config/alacritty" \
     "$USER_HOME/.config/picom" \
-    "$USER_HOME/.config/dunst" \
-    "$USER_HOME/.config/pentest" \
-    "$USER_HOME/Pictures/Screenshots" \
-    "$USER_HOME/htb" \
-    "$USER_HOME/tools" \
-    "$USER_HOME/vpn"
+    "$USER_HOME/.config/dunst/scripts" \
+    "$USER_HOME/Pictures/Screenshots"
 
 ok "Directories created"
 
@@ -208,32 +203,15 @@ _copy() {
 }
 
 _copy "i3/config"                         "$USER_HOME/.config/i3/config"
-_copy "polybar/config.ini"                "$USER_HOME/.config/polybar/config.ini"
-_copy "polybar/launch.sh"                 "$USER_HOME/.config/polybar/launch.sh"
-_copy "polybar/scripts/vpn-status.sh"     "$USER_HOME/.config/polybar/scripts/vpn-status.sh"
-_copy "polybar/scripts/htb-status.sh"     "$USER_HOME/.config/polybar/scripts/htb-status.sh"
-_copy "polybar/scripts/ip-local.sh"       "$USER_HOME/.config/polybar/scripts/ip-local.sh"
-_copy "polybar/scripts/workspaces.sh"     "$USER_HOME/.config/polybar/scripts/workspaces.sh"
+_copy "i3/i3status.conf"                  "$USER_HOME/.config/i3/i3status.conf"
 _copy "alacritty/alacritty.toml"          "$USER_HOME/.config/alacritty/alacritty.toml"
 _copy "picom/picom.conf"                  "$USER_HOME/.config/picom/picom.conf"
 _copy "zsh/.zshrc"                        "$USER_HOME/.zshrc"
-
-# Fix polybar battery/thermal — add system-specific note
-if [[ -f "$USER_HOME/.config/polybar/config.ini" ]]; then
-    BAT=$(ls /sys/class/power_supply/ 2>/dev/null | grep -iE "^BAT" | head -1)
-    ADP=$(ls /sys/class/power_supply/ 2>/dev/null | grep -iE "^(AC|ADP|ACAD)" | head -1)
-    if [[ -n "$BAT" && -n "$ADP" ]]; then
-        sed -i "s/^battery\s*=.*/battery       = $BAT/" "$USER_HOME/.config/polybar/config.ini"
-        sed -i "s/^adapter\s*=.*/adapter       = $ADP/" "$USER_HOME/.config/polybar/config.ini"
-        ok "Polybar battery auto-configured: $BAT / $ADP"
-    else
-        warn "No battery found — polybar battery module will be inactive"
-    fi
-fi
-
-# Permissions
-chmod +x "$USER_HOME/.config/polybar/launch.sh"
-chmod +x "$USER_HOME/.config/polybar/scripts/"*.sh
+_copy "starship/starship.toml"            "$USER_HOME/.config/starship.toml"
+_copy "dunst/dunstrc"                     "$USER_HOME/.config/dunst/dunstrc"
+_copy "dunst/scripts/osd-volume.sh"       "$USER_HOME/.config/dunst/scripts/osd-volume.sh"
+_copy "dunst/scripts/osd-brightness.sh"   "$USER_HOME/.config/dunst/scripts/osd-brightness.sh"
+chmod +x "$USER_HOME/.config/dunst/scripts/"*.sh
 
 ok "Dotfiles deployed"
 
@@ -277,7 +255,5 @@ echo -e "  ${G}All set.${N} Next steps:"
 echo -e "  1. Log out and select ${B}i3${N} from your display manager"
 echo -e "     Or run: ${B}startx /usr/bin/i3${N}"
 echo -e "  2. Wallpaper: drop any image into ${B}~/Pictures/${N}"
-echo -e "  3. VPN config: place your .ovpn file in ${B}~/vpn/${N}"
-echo -e "  4. Launcher: ${B}Mod+D${N}  |  Terminal: ${B}Mod+Enter${N}"
-echo -e "  5. Pentest mode: ${B}Mod+P${N}"
+echo -e "  3. Launcher: ${B}Mod+D${N}  |  Terminal: ${B}Mod+Enter${N}"
 echo ""

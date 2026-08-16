@@ -1,0 +1,84 @@
+"$schema" = 'https://starship.rs/config-schema.json'
+# Starship prompt — Dark Edition
+# Same two-line box-drawn shape + bracketed segments as the old hand-rolled
+# zsh prompt ( ┌─[user] ──[path] ──[branch]... ), now with full git status,
+# language versions and icons (needs a Nerd Font).
+
+palette     = "dark"
+add_newline = true
+
+format = """
+[┌─](dim)$username$directory$git_branch$git_status$nodejs$python$golang${custom.vpn}
+[└─](dim)$character"""
+
+right_format = """$cmd_duration$time"""
+
+[palettes.dark]
+dim  = "#4A7080"
+pink = "#E87DA0"
+blue = "#5BBAD6"
+green = "#6ED9A0"
+yellow = "#F0C040"
+red  = "#FF5C5C"
+
+[username]
+style_user  = "pink"
+style_root  = "red bold"
+format      = "[\\[$user\\]]($style)"
+show_always = true
+
+[directory]
+style              = "blue"
+format             = "[ ── ](dim)[\\[$path\\]]($style)[$read_only]($read_only_style)"
+truncation_length  = 3
+truncate_to_repo   = true
+read_only          = " "
+read_only_style    = "red"
+
+[git_branch]
+symbol = " "
+style  = "yellow"
+format = "[ ── ](dim)[\\[$symbol$branch\\]]($style)"
+
+[git_status]
+style  = "pink"
+format = '[ ── ](dim)[\[$all_status$ahead_behind\]]($style)'
+
+[nodejs]
+symbol   = " "
+style    = "green"
+format   = "[ ── ](dim)[\\[$symbol$version\\]]($style)"
+disabled = false
+
+[python]
+symbol = " "
+style  = "yellow"
+format = "[ ── ](dim)[\\[$symbol$version\\]]($style)"
+
+[golang]
+symbol = " "
+style  = "blue"
+format = "[ ── ](dim)[\\[$symbol$version\\]]($style)"
+
+[character]
+success_symbol = "[ \\$](bold pink)"
+error_symbol   = "[ \\$](bold red)"
+
+[custom.vpn]
+command = "ip -4 addr show tun0 2>/dev/null | awk '/inet /{print $2}' | cut -d/ -f1 | head -1"
+when    = "ip -4 addr show tun0 up 2>/dev/null | grep -q inet"
+symbol  = " "
+style   = "green"
+format  = "[ ── ](dim)[\\[$symbol vpn:$output\\]]($style)"
+shell   = ["bash", "--noprofile", "--norc"]
+
+[time]
+disabled    = false
+style       = "dim"
+format      = "[$time]($style)"
+time_format = "%H:%M:%S"
+
+[cmd_duration]
+min_time = 2000
+style    = "yellow"
+format   = "[⏱ $duration]($style) "

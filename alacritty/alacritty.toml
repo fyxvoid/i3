@@ -1,6 +1,6 @@
 # =============================================================
-#  Alacritty — Pentester Edition
-#  Theme: Cyber Dark (Dracula-inspired with hacker accents)
+#  Alacritty — Dark Edition
+#  Theme: Dracula-inspired dark palette
 # =============================================================
 
 # -----------------------------
@@ -58,7 +58,7 @@ x = 0
 y = 0
 
 # -----------------------------
-# Colors — Cyber Dark
+# Colors — Dark
 # -----------------------------
 [colors]
 draw_bold_text_with_bright_colors = true
@@ -108,7 +108,7 @@ white   = "#cdd6f4"   # off-white
 [colors.bright]
 black   = "#313244"
 red     = "#ff6e6e"
-green   = "#00ff9f"   # neon mint  — hacker green
+green   = "#00ff9f"   # neon mint  — bright green
 yellow  = "#fff59d"
 blue    = "#a8d8ff"
 magenta = "#f5c2e7"
@@ -132,7 +132,7 @@ unfocused_hollow = true
 # Scrolling
 # -----------------------------
 [scrolling]
-history    = 50000          # large buffer — long nmap/ffuf/hydra output
+history    = 50000          # large buffer — long command output
 multiplier = 5
 
 # -----------------------------
@@ -200,6 +200,9 @@ bindings = [
 
   # Vi mode
   { key = "Space",      mods = "Control|Shift", action = "ToggleViMode"     },
+
+  # Send literal newline (e.g. for apps that treat Enter differently)
+  { key = "Return",     mods = "Shift",         chars = "\u001B\r" },
 ]
 
 # -----------------------------
